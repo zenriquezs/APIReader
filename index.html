@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API Data Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; display: flex; height: 100vh; }
+        nav { background: #333; color: white; width: 200px; padding: 20px; box-sizing: border-box; }
+        nav h2 { font-size: 1.2em; }
+        nav button { width: 100%; margin: 10px 0; padding: 10px; background: #444; border: none; color: white; cursor: pointer; }
+        nav button.active, nav button:hover { background: #FFD700; color: black; }
+        main { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        #filters, #maxValues, #charts, #dataTable { margin-bottom: 20px; }
+        select[multiple] { width: 100%; height: 100px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>Menú Principal</h2>
+    <button id="btnHome" class="active">Inicio</button>
+    <button id="btnProgress">Progreso</button>
+    <hr />
+    <h3>Configuración API</h3>
+    <input id="apiUrl" type="text" placeholder="Ingresa URL de API" style="width:100%; margin-bottom:10px;" />
+    <button id="loadDataBtn" style="width: 100%;">Cargar datos</button>
+</nav>
+
+<main>
+    <section id="homeSection">
+        <h1>API DATA ANALYTICS: KPI, TRENDS & PREDICTIONS</h1>
+
+        <div id="maxValues"></div>
+
+        <div id="filters"></div>
+
+        <div id="charts"></div>
+
+        <div id="dataTable"></div>
+    </section>
+
+    <section id="progressSection" style="display:none;">
+        <h2>Progreso</h2>
+        <p>Aquí puedes mostrar métricas o avances.</p>
+    </section>
+</main>
+
+<script>
+    const btnHome = document.getElementById('btnHome');
+    const btnProgress = document.getElementById('btnProgress');
+    const homeSection = document.getElementById('homeSection');
+    const progressSection = document.getElementById('progressSection');
+    const loadDataBtn = document.getElementById('loadDataBtn');
+    const apiUrlInput = document.getElementById('apiUrl');
+    const maxValuesDiv = document.getElementById('maxValues');
+    const filtersDiv = document.getElementById('filters');
+    const chartsDiv = document.getElementById('charts');
+    const dataTableDiv = document.getElementById('dataTable');
+
+    let originalData = [];
+    let filteredData = [];
+    let dropdownOptions = [];
+    let numericColumns = [];
+
+    // Cambiar vistas menú
+    btnHome.onclick = () => {
+        btnHome.classList.add('active');
+        btnProgress.classList.remove('active');
+        homeSection.style.display = 'block';
+        progressSection.style.display = 'none';
+    };
+    btnProgress.onclick = () => {
+        btnProgress.classList.add('active');
+        btnHome.classList.remove('active');
+        progressSection.style.display = 'block';
+        homeSection.style.display = 'none';
+    };
+
+    // Función para obtener datos de la API
+    async function fetchData(url) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error("La respuesta no es un array");
+            return data;
+        } catch (error) {
+            alert('Error al obtener datos de la API: ' + error.message);
+            return [];
+        }
+    }
+
+    // Mostrar valores máximos
+    function showMaxValues(data) {
+        if(data.length === 0) {
+            maxValuesDiv.innerHTML = '<p>No hay datos para mostrar.</p>';
+            return;
+        }
+
+        // Detectar columnas numéricas
+        const sample = data[0];
+        numericColumns = Object.keys(sample).filter(k => typeof sample[k] === 'number');
+
+        if(numericColumns.length === 0){
+            maxValuesDiv.innerHTML = '<p>No hay columnas numéricas para mostrar valores máximos.</p>';
+            return;
+        }
+
+        let html = '<h3>📊 Valores Máximos Detectados</h3><div style="display:flex; gap:20px;">';
+        numericColumns.forEach(col => {
+            const maxVal = Math.max(...data.map(row => row[col] || 0));
+            html += `<div style="background:#FFD700; padding:10px; border-radius:5px; flex:1;">
+                        <strong>${col}</strong><br><span style="font-size:1.2em;">${maxVal.toFixed(2)}</span>
+                    </div>`;
+        });
+        html += '</div>';
+        maxValuesDiv.innerHTML = html;
+    }
+
+    // Crear filtros dinámicos para columnas string
+    function createFilters(data) {
+        filtersDiv.innerHTML = '';
+        if(data.length === 0) return;
+
+        // Detectar columnas string para filtros
+        const sample = data[0];
+        dropdownOptions = Object.keys(sample).filter(k => typeof sample[k] === 'string');
+
+        if(dropdownOptions.length === 0) {
+            filtersDiv.innerHTML = '<p>No hay columnas categóricas para filtrar.</p>';
+            return;
+        }
+
+        let html = '<h3>Filtros</h3>';
+        dropdownOptions.forEach(col => {
+            // Obtener opciones únicas
+            const uniqueValues = [...new Set(data.map(row => row[col]))].sort();
+
+            html += `<label><strong>${col}</strong></label><br>
+                <select multiple id="filter-${col}">`;
+            uniqueValues.forEach(val => {
+                html += `<option value="${val}" selected>${val}</option>`;
+            });
+            html += `</select><br><br>`;
+        });
+        filtersDiv.innerHTML = html;
+
+        // Añadir listeners para filtrado
+        dropdownOptions.forEach(col => {
+            const selectEl = document.getElementById(`filter-${col}`);
+            selectEl.addEventListener('change', applyFilters);
+        });
+    }
+
+    // Aplicar filtros seleccionados
+    function applyFilters() {
+        filteredData = [...originalData];
+        dropdownOptions.forEach(col => {
+            const selectEl = document.getElementById(`filter-${col}`);
+            const selectedOptions = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+            filteredData = filteredData.filter(row => selectedOptions.includes(row[col]));
+        });
+        showCharts(filteredData);
+        showTable(filteredData);
+        showMaxValues(filteredData);
+    }
+
+    // Mostrar gráficos
+    function showCharts(data) {
+        chartsDiv.innerHTML = '';
+        if(data.length === 0) {
+            chartsDiv.innerHTML = '<p>No hay datos para mostrar gráficos.</p>';
+            return;
+        }
+        if(numericColumns.length < 1 || dropdownOptions.length < 1) {
+            chartsDiv.innerHTML = '<p>No hay suficientes columnas numéricas o categóricas para generar gráficos.</p>';
+            return;
+        }
+
+        const category = dropdownOptions[0];
+
+        numericColumns.forEach(numCol => {
+            // Agrupar promedio por categoría
+            const groupMap = {};
+            data.forEach(row => {
+                if (!groupMap[row[category]]) groupMap[row[category]] = [];
+                groupMap[row[category]].push(row[numCol]);
+            });
+            const categories = Object.keys(groupMap);
+            const averages = categories.map(cat => {
+                const vals = groupMap[cat];
+                return vals.reduce((a,b) => a+b, 0)/vals.length;
+            });
+
+            // Barra
+            const barData = [{
+                x: categories,
+                y: averages,
+                type: 'bar',
+                marker: {color: 'blue'}
+            }];
+            const barLayout = {
+                title: `${numCol} Promedio por ${category}`
+            };
+            const barDiv = document.createElement('div');
+            chartsDiv.appendChild(barDiv);
+            Plotly.newPlot(barDiv, barData, barLayout);
+
+            // Línea (tendencia)
+            const lineData = [{
+                x: categories,
+                y: averages,
+                type: 'scatter',
+                mode: 'lines+markers',
+                marker: {color: 'green'}
+            }];
+            const lineLayout = {
+                title: `Tendencia de ${numCol} por ${category}`
+            };
+            const lineDiv = document.createElement('div');
+            chartsDiv.appendChild(lineDiv);
+            Plotly.newPlot(lineDiv, lineData, lineLayout);
+
+            // Histograma
+            const histData = [{
+                x: data.map(r => r[numCol]),
+                type: 'histogram',
+                nbinsx: 20
+            }];
+            const histLayout = {
+                title: `Distribución de ${numCol}`
+            };
+            const histDiv = document.createElement('div');
+            chartsDiv.appendChild(histDiv);
+            Plotly.newPlot(histDiv, histData, histLayout);
+
+            // Scatter
+            const scatterData = [{
+                x: data.map(r => r[category]),
+                y: data.map(r => r[numCol]),
+                mode: 'markers',
+                type: 'scatter'
+            }];
+            const scatterLayout = {
+                title: `Scatter de ${numCol} vs ${category}`
+            };
+            const scatterDiv = document.createElement('div');
+            chartsDiv.appendChild(scatterDiv);
+            Plotly.newPlot(scatterDiv, scatterData, scatterLayout);
+        });
+    }
+
+    // Mostrar tabla HTML
+    function showTable(data) {
+        if(data.length === 0) {
+            dataTableDiv.innerHTML = '<p>No hay datos para mostrar en la tabla.</p>';
+            return;
+        }
+        let html = '<h3>Datos (Vista Tabular)</h3><table><thead><tr>';
+        // Cabecera
+        Object.keys(data[0]).forEach(col => {
+            html += `<th>${col}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        // Filas (máx 50 para no saturar)
+        data.slice(0,50).forEach(row => {
+            html += '<tr>';
+            Object.values(row).forEach(val => {
+                html += `<td>${val}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        dataTableDiv.innerHTML = html;
+    }
+
+    loadDataBtn.onclick = async () => {
+        const url = apiUrlInput.value.trim();
+        if(!url) {
+            alert('Por favor ingresa una URL válida');
+            return;
+        }
+        originalData = await fetchData(url);
+        filteredData = [...originalData];
+        showMaxValues(originalData);
+        createFilters(originalData);
+        showCharts(originalData);
+        showTable(originalData);
+    };
+</script>
+
+</body>
+</html>
