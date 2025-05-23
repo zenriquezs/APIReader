@@ -195,7 +195,7 @@
                 return;
             }
 
-            let html = '<h3>📊 Valores Máximos Detectados</h3><div style="display:flex; gap:20px;">';
+            let html = '<h3>Valores Máximos Detectados</h3><div style="display:flex; gap:20px;">';
             numericColumns.forEach(col => {
                 const maxVal = Math.max(...data.map(row => (row[col] != null ? row[col] : 0)));
                 html += `<div style="background:#FFD700; padding:10px; border-radius:5px; flex:1;">
