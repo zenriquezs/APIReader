@@ -100,6 +100,26 @@
 
             <div id="charts"></div>
 
+            <div id="customChartControls">
+                <h3>🎨 Gráfico Personalizado</h3>
+                <label for="xSelect">Variable categórica (X):</label>
+                <select id="xSelect"></select><br><br>
+
+                <label for="ySelect">Variable numérica (Y):</label>
+                <select id="ySelect"></select><br><br>
+
+                <label for="chartType">Tipo de gráfico:</label>
+                <select id="chartType">
+                    <option value="bar">Barras</option>
+                    <option value="line">Línea</option>
+                    <option value="scatter">Dispersión</option>
+                    <option value="histogram">Histograma</option>
+                </select><br><br>
+
+                <button id="generateChartBtn">Generar gráfico personalizado</button>
+                <div id="customChartOutput" style="margin-top:20px;"></div>
+            </div>
+
             <div id="dataTable"></div>
         </section>
 
@@ -120,11 +140,15 @@
         const filtersDiv = document.getElementById('filters');
         const chartsDiv = document.getElementById('charts');
         const dataTableDiv = document.getElementById('dataTable');
+        const xSelect = document.getElementById('xSelect');
+        const ySelect = document.getElementById('ySelect');
+        const chartTypeSelect = document.getElementById('chartType');
+        const customChartOutput = document.getElementById('customChartOutput');
 
         let originalData = [];
         let filteredData = [];
-        let dropdownOptions = [];
-        let numericColumns = [];
+        let dropdownOptions = []; // columnas categóricas (strings)
+        let numericColumns = [];  // columnas numéricas
 
         // Cambiar vistas menú
         btnHome.onclick = () => {
@@ -140,7 +164,7 @@
             homeSection.style.display = 'none';
         };
 
-        // Función para obtener datos de la API
+        // Función para obtener datos de la API con proxy
         async function fetchData(url) {
             try {
                 const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
@@ -154,7 +178,8 @@
                 return [];
             }
         }
-        // Mostrar valores máximos
+
+        // Mostrar valores máximos de columnas numéricas
         function showMaxValues(data) {
             if (data.length === 0) {
                 maxValuesDiv.innerHTML = '<p>No hay datos para mostrar.</p>';
@@ -172,7 +197,7 @@
 
             let html = '<h3>📊 Valores Máximos Detectados</h3><div style="display:flex; gap:20px;">';
             numericColumns.forEach(col => {
-                const maxVal = Math.max(...data.map(row => row[col] || 0));
+                const maxVal = Math.max(...data.map(row => (row[col] != null ? row[col] : 0)));
                 html += `<div style="background:#FFD700; padding:10px; border-radius:5px; flex:1;">
                         <strong>${col}</strong><br><span style="font-size:1.2em;">${maxVal.toFixed(2)}</span>
                     </div>`;
@@ -181,7 +206,7 @@
             maxValuesDiv.innerHTML = html;
         }
 
-        // Crear filtros dinámicos para columnas string
+        // Crear filtros dinámicos para columnas categóricas (strings)
         function createFilters(data) {
             filtersDiv.innerHTML = '';
             if (data.length === 0) return;
@@ -224,121 +249,154 @@
                 const selectedOptions = Array.from(selectEl.selectedOptions).map(opt => opt.value);
                 filteredData = filteredData.filter(row => selectedOptions.includes(row[col]));
             });
+
+            if (filteredData.length > 0) {
+                const sample = filteredData[0];
+                dropdownOptions = Object.keys(sample).filter(k => typeof sample[k] === 'string');
+                numericColumns = Object.keys(sample).filter(k => typeof sample[k] === 'number');
+            } else {
+                dropdownOptions = [];
+                numericColumns = [];
+            }
+
             showCharts(filteredData);
             showTable(filteredData);
-            showMaxValues(filteredData);
+            populateCustomChartControls();
         }
 
-        // Mostrar gráficos
-        function showCharts(data) {
-            chartsDiv.innerHTML = '';
-            if (data.length === 0) {
-                chartsDiv.innerHTML = '<p>No hay datos para mostrar gráficos.</p>';
-                return;
-            }
-            if (numericColumns.length < 1 || dropdownOptions.length < 1) {
-                chartsDiv.innerHTML = '<p>No hay suficientes columnas numéricas o categóricas para generar gráficos.</p>';
-                return;
-            }
-
-            const category = dropdownOptions[0];
-
-            numericColumns.forEach(numCol => {
-                // Agrupar promedio por categoría
-                const groupMap = {};
-                data.forEach(row => {
-                    if (!groupMap[row[category]]) groupMap[row[category]] = [];
-                    groupMap[row[category]].push(row[numCol]);
-                });
-                const categories = Object.keys(groupMap);
-                const averages = categories.map(cat => {
-                    const vals = groupMap[cat];
-                    return vals.reduce((a, b) => a + b, 0) / vals.length;
-                });
-
-                // Barra
-                const barData = [{
-                    x: categories,
-                    y: averages,
-                    type: 'bar',
-                    marker: { color: 'blue' }
-                }];
-                const barLayout = {
-                    title: `${numCol} Promedio por ${category}`
-                };
-                const barDiv = document.createElement('div');
-                chartsDiv.appendChild(barDiv);
-                Plotly.newPlot(barDiv, barData, barLayout);
-
-                // Línea (tendencia)
-                const lineData = [{
-                    x: categories,
-                    y: averages,
-                    type: 'scatter',
-                    mode: 'lines+markers',
-                    marker: { color: 'green' }
-                }];
-                const lineLayout = {
-                    title: `Tendencia de ${numCol} por ${category}`
-                };
-                const lineDiv = document.createElement('div');
-                chartsDiv.appendChild(lineDiv);
-                Plotly.newPlot(lineDiv, lineData, lineLayout);
-
-                // Histograma
-                const histData = [{
-                    x: data.map(r => r[numCol]),
-                    type: 'histogram',
-                    nbinsx: 20
-                }];
-                const histLayout = {
-                    title: `Distribución de ${numCol}`
-                };
-                const histDiv = document.createElement('div');
-                chartsDiv.appendChild(histDiv);
-                Plotly.newPlot(histDiv, histData, histLayout);
-
-                // Scatter
-                const scatterData = [{
-                    x: data.map(r => r[category]),
-                    y: data.map(r => r[numCol]),
-                    mode: 'markers',
-                    type: 'scatter'
-                }];
-                const scatterLayout = {
-                    title: `Scatter de ${numCol} vs ${category}`
-                };
-                const scatterDiv = document.createElement('div');
-                chartsDiv.appendChild(scatterDiv);
-                Plotly.newPlot(scatterDiv, scatterData, scatterLayout);
-            });
-        }
-
-        // Mostrar tabla HTML
+        // Mostrar tablas de datos
         function showTable(data) {
             if (data.length === 0) {
-                dataTableDiv.innerHTML = '<p>No hay datos para mostrar en la tabla.</p>';
+                dataTableDiv.innerHTML = '<p>No hay datos para mostrar.</p>';
                 return;
             }
-            let html = '<h3>Datos (Vista Tabular)</h3><table><thead><tr>';
-            // Cabecera
-            Object.keys(data[0]).forEach(col => {
+
+            let html = '<h3>Datos</h3><table><thead><tr>';
+            // Cabecera con todas las columnas
+            const columns = Object.keys(data[0]);
+            columns.forEach(col => {
                 html += `<th>${col}</th>`;
             });
             html += '</tr></thead><tbody>';
 
-            // Filas (máx 50 para no saturar)
-            data.slice(0, 50).forEach(row => {
+            data.forEach(row => {
                 html += '<tr>';
-                Object.values(row).forEach(val => {
-                    html += `<td>${val}</td>`;
+                columns.forEach(col => {
+                    html += `<td>${row[col]}</td>`;
                 });
                 html += '</tr>';
             });
+
             html += '</tbody></table>';
             dataTableDiv.innerHTML = html;
         }
 
+        // Mostrar gráficos predeterminados (ejemplo: barras con primeros 5 elementos y primera variable numérica)
+        function showCharts(data) {
+            chartsDiv.innerHTML = '<h3>Gráficos</h3><div id="chartContainer"></div>';
+            if (data.length === 0) {
+                chartsDiv.innerHTML += '<p>No hay datos para mostrar gráficos.</p>';
+                return;
+            }
+
+            const sample = data[0];
+            const numericCols = Object.keys(sample).filter(k => typeof sample[k] === 'number');
+            const categoricalCols = Object.keys(sample).filter(k => typeof sample[k] === 'string');
+
+            if (numericCols.length === 0 || categoricalCols.length === 0) {
+                chartsDiv.innerHTML += '<p>No hay suficientes columnas para graficar.</p>';
+                return;
+            }
+
+            // Por ejemplo, primer categórica en X y primer numérica en Y
+            const xData = data.slice(0, 5).map(row => row[categoricalCols[0]]);
+            const yData = data.slice(0, 5).map(row => row[numericCols[0]]);
+
+            const trace = {
+                x: xData,
+                y: yData,
+                type: 'bar'
+            };
+
+            Plotly.newPlot('chartContainer', [trace], { title: `Ejemplo: ${categoricalCols[0]} vs ${numericCols[0]}` });
+        }
+
+        // Llenar selects para gráfico personalizado
+        function populateCustomChartControls() {
+            // Limpiar selects
+            xSelect.innerHTML = '';
+            ySelect.innerHTML = '';
+
+            // Si no hay columnas numéricas, mostrar mensaje en ambos
+            if (numericColumns.length === 0) {
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = 'No hay variables numéricas';
+                xSelect.appendChild(option.cloneNode(true));
+                ySelect.appendChild(option);
+            } else {
+                numericColumns.forEach(opt => {
+                    const optionX = document.createElement('option');
+                    optionX.value = opt;
+                    optionX.textContent = opt;
+                    xSelect.appendChild(optionX);
+
+                    const optionY = document.createElement('option');
+                    optionY.value = opt;
+                    optionY.textContent = opt;
+                    ySelect.appendChild(optionY);
+                });
+            }
+        }
+
+
+        // Generar gráfico personalizado
+        document.getElementById('generateChartBtn').onclick = () => {
+            const xVar = xSelect.value;
+            const yVar = ySelect.value;
+            const chartType = chartTypeSelect.value;
+
+            if (!xVar || !yVar) {
+                alert('Selecciona ambas variables (X y Y).');
+                return;
+            }
+            if (!filteredData.length) {
+                alert('No hay datos disponibles para graficar.');
+                return;
+            }
+
+            // Extraer datos para las variables seleccionadas
+            const xData = filteredData.map(row => row[xVar]);
+            const yData = filteredData.map(row => row[yVar]);
+
+            let trace = {};
+
+            if (chartType === 'histogram') {
+                // Para histograma, sólo toma yData (numérico)
+                trace = {
+                    x: yData,
+                    type: 'histogram',
+                    marker: { color: '#FFD700' }
+                };
+            } else {
+                trace = {
+                    x: xData,
+                    y: yData,
+                    type: chartType,
+                    marker: { color: '#1162ac' }
+                };
+            }
+
+            const layout = {
+                title: `Gráfico ${chartType} de ${yVar} vs ${xVar}`,
+                xaxis: { title: xVar },
+                yaxis: { title: yVar }
+            };
+
+            Plotly.newPlot(customChartOutput, [trace], layout, { responsive: true });
+        };
+
+        // Cargar datos y preparar la interfaz
         loadDataBtn.onclick = async () => {
             const url = apiUrlInput.value.trim();
             if (!url) {
@@ -347,10 +405,21 @@
             }
             originalData = await fetchData(url);
             filteredData = [...originalData];
+
+            if (originalData.length > 0) {
+                const sample = originalData[0];
+                dropdownOptions = Object.keys(sample).filter(k => typeof sample[k] === 'string');
+                numericColumns = Object.keys(sample).filter(k => typeof sample[k] === 'number');
+            } else {
+                dropdownOptions = [];
+                numericColumns = [];
+            }
+
             showMaxValues(originalData);
             createFilters(originalData);
             showCharts(originalData);
             showTable(originalData);
+            populateCustomChartControls();
         };
     </script>
 
