@@ -8,8 +8,8 @@ body {
 nav {
     background: #333;
     color: white;
-    width: 200px;
-    padding: 20px;
+    width: 20%;
+    padding: 25px;
     box-sizing: border-box;
 }
 
@@ -21,11 +21,26 @@ nav button {
     width: 100%;
     margin: 10px 0;
     padding: 10px;
+    border-radius: 10px;
     background: #444;
     border: none;
     color: white;
     cursor: pointer;
 }
+
+nav input {
+ height: 5%;
+  border: 2px solid #1162ac;         
+  border-radius: 10px;  
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 
 nav button.active,
 nav button:hover {
