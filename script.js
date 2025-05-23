@@ -18,7 +18,6 @@ let filteredData = [];
 let dropdownOptions = [];
 let numericColumns = [];
 
-// Navegación
 btnHome.onclick = () => {
     btnHome.classList.add('active');
     btnProgress.classList.remove('active');
