@@ -1,6 +1,5 @@
 
-const btnHome = document.getElementById("btnHome");
-const btnProgress = document.getElementById("btnProgress");
+
 const homeSection = document.getElementById("homeSection");
 const progressSection = document.getElementById("progressSection");
 const loadDataBtn = document.getElementById("loadDataBtn");
@@ -20,33 +19,25 @@ let dropdownOptions = [];
 let numericColumns = [];
 
 
-btnHome.onclick = () => {
-  btnHome.classList.add("active");
-  btnProgress.classList.remove("active");
-  homeSection.style.display = "block";
-  progressSection.style.display = "none";
-};
-btnProgress.onclick = () => {
-  btnProgress.classList.add("active");
-  btnHome.classList.remove("active");
-  progressSection.style.display = "block";
-  homeSection.style.display = "none";
-};
+window.addEventListener("DOMContentLoaded", () => {
+    loadDataBtn.click();
+  });
 
+  loadDataBtn.addEventListener("click", async () => {
+    const url = apiUrlInput.value.trim();
+    if (!url) return;
+    const data = await fetchData(url);
+    originalData = [...data];
+    filteredData = [...data];
+    showMaxValues(data);
+    createFilters(data);
+    showCharts(data);
+    showTable(data);
+    populateCustomChartControls();
+  });
 async function fetchData(url) {
   try {
     let proxyUrl;
-
-
-
-
-
-
-
-
-
-
-
     if (url === "https://api-influx-fastapi.onrender.com/api/datos") {
       proxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
     } else {
@@ -263,7 +254,7 @@ function populateCustomChartControls() {
       ySelect.appendChild(optionY);
     });
   }
-}
+} 
 
 document.getElementById("generateChartBtn").onclick = () => {
   const xVar = xSelect.value;
