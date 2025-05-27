@@ -3,7 +3,7 @@
 
   --yellow-color: 52;
   --green-color: 116;
-  --pink-color: 300;
+   --blue-color: 220;
   --white-color: hsl(0, 0%, 100%);
   --black-color: hsl(0, 0%, 0%);
 
@@ -61,7 +61,7 @@ img {
 }
 
 .card-pink {
-  --hue: var(--pink-color);
+  --hue: var( --blue-color);
 }
 
 .card {
