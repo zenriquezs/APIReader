@@ -1,11 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;600;700&display=swap");
 :root {
 
-  --yellow-color: 52;
-  --green-color: 116;
+  --yellow-color: 30;
+  --green-color: 100;
   --white-color: hsl(0, 0%, 100%);
-   --blue-color: 190;
-  --white-color: hsl(0, 0%, 100%);
+   --blue-color: 180 ;
   --black-color: hsl(0, 0%, 0%);
 
   --body-font: "Montserrat Alternates", serif;

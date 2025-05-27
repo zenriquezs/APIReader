@@ -145,7 +145,6 @@ button#generateChartBtn:hover {
   background-color: #0d4c8a;
 }
 
-/* Tabla de datos moderna */
 #dataTable {
   margin-top: 40px;
   overflow-x: auto;
