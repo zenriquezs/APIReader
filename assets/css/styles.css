@@ -3,7 +3,8 @@
 
   --yellow-color: 52;
   --green-color: 116;
-   --blue-color: 220;
+  --white-color: hsl(0, 0%, 100%);
+   --blue-color: 190;
   --white-color: hsl(0, 0%, 100%);
   --black-color: hsl(0, 0%, 0%);
 

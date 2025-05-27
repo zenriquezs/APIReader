@@ -1,83 +1,263 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;600;700&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;600;700&display=swap");
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-    height: 100vh;
+  margin: 0;
+  font-family: "Montserrat Alternates", sans-serif;
+  background-color: #eef3f8;
 }
 
-nav {
-    background: #333;
-    color: white;
-    width: 20%;
-    padding: 25px;
-    box-sizing: border-box;
+header {
+  background-color: #1162ac;
+  color: white;
+  padding: 12px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-nav h2 {
-    font-size: 1.2em;
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-nav button {
-    width: 100%;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    background: #444;
-    border: none;
-    color: white;
-    cursor: pointer;
+.nav-left a {
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
 }
 
-nav input {
- height: 5%;
-  border: 2px solid #1162ac;         
-  border-radius: 10px;  
-  font-size: 15px;
-  font-family: inherit;
-  outline: none;
-  transition: all 0.3s ease;
-  background-color: #f9f9f9;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.nav-left a:hover {
+  color: #dbeaff;
+}
+
+.nav-left i {
+  font-size: 26px;
+  transform: scaleX(-1); /* para el efecto flip horizontal */
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-right input[type="text"] {
+  width: 280px;
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+}
+
+.nav-right button {
+  padding: 8px 15px;
+  background-color: #0a4b85;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.nav-right button:hover {
+  background-color: #083b68;
 }
 
 
-nav button.active,
-nav button:hover {
-    background: #FFD700;
-    color: black;
+header input[type="text"] {
+  width: 300px;
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+header button {
+  padding: 8px 15px;
+  background-color: #0a4b85;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+header button:hover {
+  background-color: #083b68;
 }
 
 main {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
+  padding: 30px;
 }
 
-#filters,
-#maxValues,
-#charts,
+h1 {
+  color: #0a4b85;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#customChartControls {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#customChartControls h3 {
+  color: #1162ac;
+}
+
+label {
+  margin-bottom: 4px;
+  font-weight: bold;
+  color: #0a4b85;
+}
+
+select,
+button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button#generateChartBtn {
+  background-color: #1162ac;
+  color: white;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+button#generateChartBtn:hover {
+  background-color: #0d4c8a;
+}
+
+/* Tabla de datos moderna */
 #dataTable {
-    margin-bottom: 20px;
+  margin-top: 40px;
+  overflow-x: auto;
 }
 
-select[multiple] {
+#dataTable table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#dataTable th,
+#dataTable td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+#dataTable th {
+  background-color: #0a4b85;
+  color: white;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+#dataTable tr:nth-child(even) {
+  background-color: #f2f6fc;
+}
+
+#dataTable tr:hover {
+  background-color: #dbeaff;
+  transition: 0.3s;
+}
+
+#filters {
+  background: #ffffff;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+}
+
+#customChartControls {
+  max-width: 900px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+#customChartControls label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #0a4b85;
+}
+
+#customChartControls select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+#customChartControls select:focus {
+  border-color: #1162ac;
+  outline: none;
+}
+
+#customChartControls .form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  #customChartControls {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  #customChartControls .form-group {
+    width: 48%;
+  }
+
+  #customChartControls .form-group.full-width {
     width: 100%;
-    height: 100px;
+  }
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
+#generateChartBtn {
+  align-self: flex-start;
+  padding: 10px 25px;
+  background-color: #1162ac;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-th,
-td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background: #eee;
+#generateChartBtn:hover {
+  background-color: #0d4c87;
 }
