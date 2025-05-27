@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API Data Analytics</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav>
+        <h2>Menú Principal</h2>
+        <button id="btnHome" class="active">Inicio</button>
+        <button id="btnProgress">Progreso</button>
+        <hr />
+        <h3>Configuración API</h3>
+        <input id="apiUrl" type="text" placeholder="Ingresa URL de API" style="width:100%; margin-bottom:10px;" />
+        <button id="loadDataBtn" style="width: 100%;">Cargar datos</button>
+    </nav>
+
+    <main>
+        <section id="homeSection">
+            <h1>API DATA ANALYTICS: KPI, TRENDS & PREDICTIONS</h1>
+
+            <div id="maxValues"></div>
+            <div id="filters"></div>
+            <div id="charts"></div>
+
+            <div id="customChartControls">
+                <h3>Gráfico Personalizado</h3>
+                <label for="xSelect">Variable categórica (X):</label>
+                <select id="xSelect"></select><br><br>
+
+                <label for="ySelect">Variable numérica (Y):</label>
+                <select id="ySelect"></select><br><br>
+
+                <label for="chartType">Tipo de gráfico:</label>
+                <select id="chartType">
+                    <option value="bar">Barras</option>
+                    <option value="line">Línea</option>
+                    <option value="scatter">Dispersión</option>
+                    <option value="histogram">Histograma</option>
+                </select><br><br>
+
+                <button id="generateChartBtn">Generar gráfico personalizado</button>
+                <div id="customChartOutput" style="margin-top:20px;"></div>
+            </div>
+
+            <div id="dataTable"></div>
+        </section>
+
+        <section id="progressSection" style="display:none;">
+            <h2>Progreso</h2>
+            <p>Aquí puedes mostrar métricas o avances.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

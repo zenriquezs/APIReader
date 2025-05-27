@@ -1,64 +1,126 @@
 <!DOCTYPE html>
-<html lang="es">
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+      <link rel="stylesheet" href="assets/css/styles.css">
+      <title>API READER ON CARDS</title>
+   </head>
+   <body>
+      <section class="card">
+         <img src="assets/img/img bd.png" alt="image" class="card__bg">
+         <div class="card__blur"></div>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>API Data Analytics</title>
-    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
+         <div class="card__container container">
+            <article class="card__article card-yellow">
+               <img src="assets/img/Img 2.png" alt="image" class="card__img">
+               <div class="card__shadow"></div>
+   
+               <div class="card__data">
+                  <h2 class="card__name">Deep Earth Data</h2>
+                  <span class="card__profession">Monitoreo de condiciones ideales de minas</span>
+               </div>
+   
+               <div class="card__clip">
+                  <i class="ri-menu-4-line"></i>
+               </div>
 
-<body>
+               <div class="info">
+                  <div class="info__data">
+                     <h2 class="info__name">MODULO</h2>
+                     <p class="info__description">
+                        Se instala en las paredes de la cueva y detecta vibraciones y sonidos, lo que ayuda a identificar posibles movimientos peligrosos.
+                     </p>
+                     <a href="Deep Earth Data.html" class="info__button" target="_blank">CONSUMIR API</a>
+                  </div>
+   
+                  <div class="info__social">
+                     <a href="https://www.facebook.com/" target="_blank" class="info__link">
+                        <i class="ri-facebook-circle-line"></i>
+                     </a>
+                     <a href="https://www.instagram.com/" target="_blank" class="info__link">
+                        <i class="ri-instagram-line"></i>
+                     </a>
+                     <a href="https://twitter.com/" target="_blank" class="info__link">
+                        <i class="ri-twitter-x-line"></i>
+                     </a>
+                  </div>
+               </div>
+            </article>
+   
+            <article class="card__article card-green">
+               <img src="assets/img/Img 1.png" alt="image" class="card__img">
+               <div class="card__shadow"></div>
 
-    <nav>
-        <h2>Menú Principal</h2>
-        <button id="btnHome" class="active">Inicio</button>
-        <button id="btnProgress">Progreso</button>
-        <hr />
-        <h3>Configuración API</h3>
-        <input id="apiUrl" type="text" placeholder="Ingresa URL de API" style="width:100%; margin-bottom:10px;" />
-        <button id="loadDataBtn" style="width: 100%;">Cargar datos</button>
-    </nav>
+               <div class="card__data">
+                  <h2 class="card__name">EcoCultivo</h2>
+                  <span class="card__profession">Monitoreo de cultivos de maíz</span>
+               </div>
+   
+               <div class="card__clip">
+                  <i class="ri-menu-4-line"></i>
+               </div>
 
-    <main>
-        <section id="homeSection">
-            <h1>API DATA ANALYTICS: KPI, TRENDS & PREDICTIONS</h1>
+               <div class="info">
+                  <div class="info__data">
+                     <h2 class="info__name">MODULO</h2>
+                     <p class="info__description">
+                     Se coloca en el casco del minero y mide gases, humedad y temperatura, protegiendo directamente la salud del trabajador.
+                     </p>
+                     <a href="EcoCultivo.html" class="info__button" target="_blank">CONSUMIR API</a>
+                  </div>
+   
+                  <div class="info__social">
+                     <a href="https://www.facebook.com/" target="_blank" class="info__link">
+                        <i class="ri-facebook-circle-line"></i>
+                     </a>
+                     <a href="https://www.instagram.com/" target="_blank" class="info__link">
+                        <i class="ri-instagram-line"></i>
+                     </a>
+                     <a href="https://twitter.com/" target="_blank" class="info__link">
+                        <i class="ri-twitter-x-line"></i>
+                     </a>
+                  </div>
+               </div>
+            </article>
+   
+            <article class="card__article card-pink">
+               <img src="assets/img/Img 3.png" alt="image" class="card__img">
+               <div class="card__shadow"></div>
 
-            <div id="maxValues"></div>
-            <div id="filters"></div>
-            <div id="charts"></div>
+               <div class="card__data">
+                  <h2 class="card__name">Fishnet</h2>
+                  <span class="card__profession">Sistema de monitoreo en estanques acuícolas</span>
+               </div>
+   
+               <div class="card__clip">
+                  <i class="ri-menu-4-line"></i>
+               </div>
 
-            <div id="customChartControls">
-                <h3>Gráfico Personalizado</h3>
-                <label for="xSelect">Variable categórica (X):</label>
-                <select id="xSelect"></select><br><br>
-
-                <label for="ySelect">Variable numérica (Y):</label>
-                <select id="ySelect"></select><br><br>
-
-                <label for="chartType">Tipo de gráfico:</label>
-                <select id="chartType">
-                    <option value="bar">Barras</option>
-                    <option value="line">Línea</option>
-                    <option value="scatter">Dispersión</option>
-                    <option value="histogram">Histograma</option>
-                </select><br><br>
-
-                <button id="generateChartBtn">Generar gráfico personalizado</button>
-                <div id="customChartOutput" style="margin-top:20px;"></div>
-            </div>
-
-            <div id="dataTable"></div>
-        </section>
-
-        <section id="progressSection" style="display:none;">
-            <h2>Progreso</h2>
-            <p>Aquí puedes mostrar métricas o avances.</p>
-        </section>
-    </main>
-
-    <script src="script.js"></script>
-</body>
-
+               <div class="info">
+                  <div class="info__data">
+                     <h2 class="info__name">MODULO</h2>
+                     <p class="info__description">
+                        Ubicado fuera de la mina, este módulo recibe los datos de los otros dos módulos y los transmite en tiempo real. Además, almacena la información en una base de datos para generar un dashboard que permite tomar decisiones inmediatas y reducir los riesgos laborales.
+                     </p>
+                     <a href="Fishnet.html" class="info__button" target="_blank">CONSUMIR API</a>
+                  </div>
+   
+                  <div class="info__social">
+                     <a href="https://www.facebook.com/" target="_blank" class="info__link">
+                        <i class="ri-facebook-circle-line"></i>
+                     </a>
+                     <a href="https://www.instagram.com/" target="_blank" class="info__link">
+                        <i class="ri-instagram-line"></i>
+                     </a>
+                     <a href="https://twitter.com/" target="_blank" class="info__link">
+                        <i class="ri-twitter-x-line"></i>
+                     </a>
+                  </div>
+               </div>
+            </article>
+         </div>
+      </section>
+   </body>
 </html>
